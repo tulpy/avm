@@ -1,4 +1,4 @@
-import { locPrefixes, resPrefixes, commonResourceGroupNames, customNames, delimeters } from '../configuration/shared/namingConfig.bicep'
+import * as shared from '../configuration/shared/shared.conf.bicep'
 
 targetScope = 'subscription'
 
@@ -78,10 +78,10 @@ param namePrefixesPayload object = {}
 param locationPrefixesPayload object = {}
 
 // Variables
-var namePrefixes = !empty(namePrefixesPayload) ? namePrefixesPayload : resPrefixes
-var locationPrefixes = !empty(locationPrefixesPayload) ? locationPrefixesPayload : locPrefixes
-var argPrefix = toLower('${namePrefixes.resourceGroup}${delimeters.dash}${locationPrefixes[location]}${delimeters.dash}${lzPrefix}-${envPrefix}')
-var vntPrefix = toLower('${namePrefixes.virtualNetwork}${delimeters.dash}${locationPrefixes[location]}${delimeters.dash}${lzPrefix}${delimeters.dash}${envPrefix}')
+var namePrefixes = !empty(namePrefixesPayload) ? namePrefixesPayload : shared.resPrefixes
+var locationPrefixes = !empty(locationPrefixesPayload) ? locationPrefixesPayload : shared.locPrefixes
+var argPrefix = toLower('${namePrefixes.resourceGroup}${shared.delimeters.dash}${locationPrefixes[location]}${shared.delimeters.dash}${lzPrefix}${shared.delimeters.dash}${envPrefix}')
+var vntPrefix = toLower('${namePrefixes.virtualNetwork}${shared.delimeters.dash}${locationPrefixes[location]}${shared.delimeters.dash}${lzPrefix}${shared.delimeters.dash}${envPrefix}')
 var vNetAddressSpace = replace(addressPrefixes, '/', '_')
 
 // Check hubVirtualNetworkResourceId to see if it's a virtual WAN connection instead of normal virtual network peering
@@ -112,28 +112,27 @@ var hubVirtualNetworkResourceGroup = (!empty(hubVirtualNetworkResourceId) && con
   : '')
 
 var resourceGroups = {
-  network: useCustomNaming && !empty(customNames.networkRg)
-    ? customNames.networkRg
-    : '${argPrefix}${delimeters.dash}network'
+  network: useCustomNaming && !empty(shared.customNames.networkRg)
+    ? shared.customNames.networkRg
+    : '${argPrefix}${shared.delimeters.dash}network'
 }
 
 var resourceNames = {
-  virtualNetwork: useCustomNaming && !empty(customNames.virtualNetwork)
-    ? customNames.virtualNetwork
-    : '${vntPrefix}${delimeters.dash}${vNetAddressSpace}'
-  actionGroup: useCustomNaming && !empty(customNames.actionGroup)
-    ? customNames.actionGroup
+  virtualNetwork: useCustomNaming && !empty(shared.customNames.virtualNetwork)
+    ? shared.customNames.virtualNetwork
+    : '${vntPrefix}${shared.delimeters.dash}${vNetAddressSpace}'
+  actionGroup: useCustomNaming && !empty(shared.customNames.actionGroup)
+    ? shared.customNames.actionGroup
     : '${lzPrefix}${envPrefix}ActionGroup'
-  actionGroupShort: useCustomNaming && !empty(customNames.actionGroupShort)
-    ? customNames.actionGroupShort
+  actionGroupShort: useCustomNaming && !empty(shared.customNames.actionGroupShort)
+    ? shared.customNames.actionGroupShort
     : '${lzPrefix}${envPrefix}AG'
 }
 
-// Module: Subscription Tags
-module subscriptionTags '../modules/CARML/resources/tags/main.bicep' = if (!empty(tags)) {
-  name: take('subTags-${guid(deployment().name)}', 64)
-  params: {
-    onlyUpdate: false
+// Resource: Subscription Tags
+resource tag 'Microsoft.Resources/tags@2021-04-01' = {
+  name: 'default'
+  properties: {
     tags: tags
   }
 }
@@ -154,7 +153,7 @@ module budget 'br/public:avm/res/consumption/budget:0.3.3' = [
 
 // Module: Resource Groups (Common)
 module sharedResourceGroups 'br/public:avm/res/resources/resource-group:0.2.4' = [
-  for commonResourceGroup in commonResourceGroupNames: {
+  for commonResourceGroup in shared.commonResourceGroupNames: {
     name: take('sharedResourceGroups-${commonResourceGroup}', 64)
     params: {
       name: commonResourceGroup

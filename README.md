@@ -1,5 +1,7 @@
 
-Create Deployment Stack
+# Demo
+
+## Create Application Landing Zone Deployment Stack
 
 ``` bicep
 New-AzSubscriptionDeploymentStack `
@@ -8,13 +10,27 @@ New-AzSubscriptionDeploymentStack `
     -TemplateFile ./deploymentStacks/src/orchestration/main.bicep `
     -TemplateParameterFile ./deploymentStacks/src/configuration/parameters.bicepparam `
     -ActionOnUnmanage detachAll `
-    -DenySettingsMode none
+    -DenySettingsMode denyDelete
+```
 
-Get-AzSubscriptionDeploymentStack `
-  -Name "lz"
+## Get the Deployment Stack
 
-(Get-AzSubscriptionDeploymentStack -Name "lz").Resources
+``` bicep
+Get-AzSubscriptionDeploymentStack -Name lz
+```
 
-Remove-AzSubscriptionDeploymentStack -Name Lz -ActionOnUnmanage deleteAll
+## Get Deployment Stack Resources (Detailed)
 
+``` bicep
+(Get-AzSubscriptionDeploymentStack -Name lz).Resources
+```
+
+## Edit the Deployment Stack
+
+- Go through the portal
+
+## Delete Deployment Stack
+
+``` bicep
+Remove-AzSubscriptionDeploymentStack -Name Lz -ActionOnUnmanage deleteResources
 ```

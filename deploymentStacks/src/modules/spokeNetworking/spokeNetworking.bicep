@@ -1,4 +1,4 @@
-import { sharedNSGrulesInbound, sharedNSGrulesOutbound, routes } from '../../configuration/shared/networkConfig.bicep'
+import * as shared from '../../configuration/shared/shared.conf.bicep'
 
 targetScope = 'resourceGroup'
 
@@ -96,7 +96,7 @@ module routeTable 'br/public:avm/res/network/route-table:0.2.2' = [
       name: subnet.routeTableName
       location: location
       tags: tags
-      routes: concat(routes, subnet.routes)
+      routes: concat(shared.routes, subnet.routes)
       disableBgpRoutePropagation: disableBgpRoutePropagation
     }
   }
@@ -110,7 +110,7 @@ module networkSecurityGroup 'br/public:avm/res/network/network-security-group:0.
       name: subnet.networkSecurityGroupName
       location: location
       tags: tags
-      securityRules: concat(sharedNSGrulesInbound, sharedNSGrulesOutbound, subnet.securityRules)
+      securityRules: concat(shared.sharedNSGrulesInbound, shared.sharedNSGrulesOutbound, subnet.securityRules)
     }
   }
 ]
