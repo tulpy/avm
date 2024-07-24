@@ -9,8 +9,9 @@ New-AzSubscriptionDeploymentStack `
     -Location australiaeast `
     -TemplateFile ./deploymentStacks/src/orchestration/main.bicep `
     -TemplateParameterFile ./deploymentStacks/src/configuration/parameters.bicepparam `
-    -ActionOnUnmanage detachAll `
-    -DenySettingsMode denyDelete
+    -ActionOnUnmanage deleteResources `
+    -DenySettingsMode denyDelete `
+    -Verbose
 ```
 
 ## Get the Deployment Stack
