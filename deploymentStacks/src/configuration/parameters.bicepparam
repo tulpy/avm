@@ -2,7 +2,7 @@ import * as shared from './shared/shared.conf.bicep'
 
 using '../orchestration/main.bicep'
 
-param lzPrefix = 'sap'
+param lzPrefix = 'lz'
 param envPrefix = 'prd'
 param tags = {
   environment: envPrefix
